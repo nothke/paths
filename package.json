@@ -1,0 +1,8 @@
+{
+  "name": "nothke.paths",
+  "displayName": "Paths",
+  "version": "1.0.0",
+  "unity": "2018.1",
+  "description": "General purpose simple networked paths. For example, for AI following, cabling, railways, etc.",
+  "type": "library"
+}
