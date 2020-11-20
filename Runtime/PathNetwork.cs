@@ -22,6 +22,7 @@ namespace Nothke.Paths
         public float autoSearchRadius = 0.2f;
 
         List<Node> closeNodesBuffer = new List<Node>();
+        List<End> endsBuffer = new List<End>();
 
         [ContextMenu("Rebuild Network")]
         public void RebuildNetwork()
@@ -107,7 +108,8 @@ namespace Nothke.Paths
 
             RebuildNetworkIfNecessary();
 
-            GetClosebyEndNodes(closeNodesBuffer, inNode);
+            //GetClosebyEndNodes(closeNodesBuffer, inNode);
+            GetClosebyEndNodes(allPaths, closeNodesBuffer, inNode.path, inNode.index, autoSearchRadius, false);
 
             if (closeNodesBuffer.Count == 0)
             {
@@ -157,6 +159,7 @@ namespace Nothke.Paths
             return result;
         }
 
+        /*
         [System.Obsolete]
         public void GetClosebyEndNodes(List<Node> closeNodes, Node inNode, bool includeSelf = false)
         {
@@ -191,6 +194,12 @@ namespace Nothke.Paths
             }
 
             //Debug.Log($"Found nodes: {closeNodes.Count}");
+        }*/
+
+        public List<End> GetClosebyEnds(Path inPath, int pointIndex, float searchRadius = 0)
+        {
+            GetClosebyEnds(allPaths, endsBuffer, inPath, pointIndex, searchRadius != 0 ? searchRadius : autoSearchRadius);
+            return endsBuffer;
         }
 
         public static void GetClosebyEnds(Path[] allPaths, List<End> closeEnds, Path inPath, int pointIndex, float searchRadius, bool includeSelf = false)
