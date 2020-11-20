@@ -113,6 +113,20 @@ namespace Nothke.Paths
                 return points[current - 1];
         }
 
+        public float GetLength()
+        {
+            float total = 0;
+
+            for (int i = 1; i < points.Length; i++)
+            {
+                total += Vector3.Distance(
+                    points[i - 1].position,
+                    points[i].position);
+            }
+
+            return total;
+        }
+
 #if UNITY_EDITOR
         void OnDrawGizmos()
         {
@@ -223,21 +237,6 @@ namespace Nothke.Paths
                     Gizmos.DrawLine(mid, mid - (dir - right) * options.directionArrowsScale);
                 }
             }
-        }
-
-        [ContextMenu("Debug Length")]
-        public void DebugLength()
-        {
-            float total = 0;
-
-            for (int i = 1; i < points.Length; i++)
-            {
-                total += Vector3.Distance(
-                    points[i - 1].position,
-                    points[i].position);
-            }
-
-            Debug.Log($"Path length: {total}");
         }
 #endif
     }

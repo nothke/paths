@@ -1,0 +1,17 @@
+{
+    "name": "Nothke.Paths.Editor",
+    "references": [
+        "GUID:a4053ff158d3ba44486768e207e83161"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
