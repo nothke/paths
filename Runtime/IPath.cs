@@ -20,6 +20,8 @@ namespace Nothke.Paths
         float GetDistanceTo(int i);
 
         Vector3 this[int i] { get; }
+
+        Vector3 GetClosestPointOnPath(in Vector3 source, out int segmentIndex);
     }
 
     public interface IEnd
