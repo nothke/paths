@@ -4,6 +4,14 @@ using System.Collections.Generic;
 
 namespace Nothke.Paths
 {
+    public interface IPathNetwork
+    {
+        void RebuildNetwork();
+        INode GetClosestNode(Vector3 position);
+
+        List<IEnd> GetClosebyEnds(IPath inPath, int pointIndex, float searchRadius = 0);
+    }
+
     public class PathNetwork : MonoBehaviour
     {
         public static PathNetwork e;
@@ -45,7 +53,7 @@ namespace Nothke.Paths
 
         public Path GetNextPath(Path inPath, bool first, out bool outPathFirst)
         {
-            Vector3 queryPoint = first ? inPath.First.position : inPath.Last.position;
+            Vector3 queryPoint = first ? inPath.First : inPath.Last;
 
             // find closest node of path
             foreach (var path in allPaths)
@@ -53,13 +61,13 @@ namespace Nothke.Paths
                 if (!path.IsValid()) continue;
                 if (path == inPath) continue;
 
-                if ((path.First.position - queryPoint).magnitude < autoSearchRadius)
+                if ((path.First - queryPoint).magnitude < autoSearchRadius)
                 {
                     outPathFirst = true;
                     return path;
                 }
 
-                if ((path.Last.position - queryPoint).magnitude < autoSearchRadius)
+                if ((path.Last - queryPoint).magnitude < autoSearchRadius)
                 {
                     outPathFirst = false;
                     return path;
@@ -215,10 +223,10 @@ namespace Nothke.Paths
                 if (!path.IsValid()) continue;
                 if (!includeSelf && path == inPath) continue; // prevents returning
 
-                if ((path.First.position - inPos).sqrMagnitude < searchRadiusSqr)
+                if ((path.First - inPos).sqrMagnitude < searchRadiusSqr)
                     closeEnds.Add(new End() { path = path, isLast = false });
 
-                if ((path.Last.position - inPos).sqrMagnitude < searchRadiusSqr)
+                if ((path.Last - inPos).sqrMagnitude < searchRadiusSqr)
                     closeEnds.Add(new End() { path = path, isLast = true });
             }
         }
@@ -236,10 +244,10 @@ namespace Nothke.Paths
                 if (!path.IsValid()) continue;
                 if (!includeSelf && path == inPath) continue; // prevents returning
 
-                if ((path.First.position - inPos).sqrMagnitude < searchRadiusSqr)
+                if ((path.First - inPos).sqrMagnitude < searchRadiusSqr)
                     closeNodes.Add(new Node(path, path.FirstIndex));
 
-                if ((path.Last.position - inPos).sqrMagnitude < searchRadiusSqr)
+                if ((path.Last - inPos).sqrMagnitude < searchRadiusSqr)
                     closeNodes.Add(new Node(path, path.LastIndex - 1));
             }
         }
@@ -256,14 +264,14 @@ namespace Nothke.Paths
             {
                 if (!path.IsValid()) continue;
 
-                if ((path.First.position - queryPoint).magnitude < autoSearchRadius)
+                if ((path.First - queryPoint).magnitude < autoSearchRadius)
                 {
                     outPathFirst = true;
                     return path;
                 }
 
 
-                if ((path.Last.position - queryPoint).magnitude < autoSearchRadius)
+                if ((path.Last - queryPoint).magnitude < autoSearchRadius)
                 {
                     outPathFirst = false;
                     return path;

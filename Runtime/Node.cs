@@ -3,12 +3,15 @@ using System.Collections;
 
 namespace Nothke.Paths
 {
-    public struct End
+    public struct End : IEnd
     {
         public Path path;
         public bool isLast;
 
         public int Index { get { return isLast ? path.points.Length - 1 : 0; } }
+
+        public IPath Path { get => path; set => path = (Path)value; }
+        public bool IsLast { get => isLast; set => isLast = value; }
 
         public Vector3 GetPosition()
         {
@@ -41,12 +44,15 @@ namespace Nothke.Paths
     }
 
     [System.Serializable]
-    public struct Node
+    public struct Node : INode
     {
         public Path path;
         public int index;
 
         public bool IsNull { get { return path == null; } }
+
+        public IPath Path { get => path; set => path = (Path)value; }
+        public int Index { get => index; set => index = value; }
 
         public Vector3 GetPosition()
         {

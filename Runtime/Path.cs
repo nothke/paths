@@ -15,13 +15,14 @@ public interface IPathCustomType
 
 namespace Nothke.Paths
 {
-    public class Path : MonoBehaviour
+    public class Path : MonoBehaviour, IPath
     {
         public VehicleMask vehicleMask = VehicleMask.All;
 
         public bool noSpawn;
 
         public Transform[] points;
+        public Vector3 this[int i] { get => points[i].position; }
 
         public Vector3[] knots;
 
@@ -30,11 +31,14 @@ namespace Nothke.Paths
         [SerializeField] Color color = Color.blue;
 #endif
 
-        public Transform First { get { return points[0]; } }
-        public Transform Last { get { return points[points.Length - 1]; } }
+        public Vector3 First { get { return points[0].position; } }
+        public Vector3 Last { get { return points[points.Length - 1].position; } }
 
         public int LastIndex { get { return points.Length - 1; } }
         public int FirstIndex { get { return 0; } }
+
+        public float Length => GetLength();
+        public int PointCount => points.Length;
 
         public void BuildKnots()
         {
@@ -209,8 +213,8 @@ namespace Nothke.Paths
                 }
             }
 
-            Gizmos.DrawWireSphere(First.position, options.endNodesSize);
-            Gizmos.DrawWireSphere(Last.position, options.endNodesSize);
+            Gizmos.DrawWireSphere(First, options.endNodesSize);
+            Gizmos.DrawWireSphere(Last, options.endNodesSize);
         }
 
         private void OnDrawGizmosSelected()
@@ -237,6 +241,42 @@ namespace Nothke.Paths
                     Gizmos.DrawLine(mid, mid - (dir - right) * options.directionArrowsScale);
                 }
             }
+        }
+
+        public Vector3 PositionAt(int i)
+        {
+            return points[i].position;
+        }
+
+        public Vector3 DirectionAt(int i)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        Vector3 IPath.GetNext(int i)
+        {
+            return GetNext(i).position;
+        }
+
+        Vector3 IPath.GetPrevious(int i)
+        {
+            return GetPrevious(i).position;
+        }
+
+        public float GetLengthOfSegmentAfter(int i)
+        {
+            if (i > 0 && i < points.Length - 1)
+                return (points[i + 1].position - points[i].position).magnitude;
+            else return 0;
+        }
+
+        public float GetDistanceTo(int end)
+        {
+            float total = 0;
+            for (int i = 1; i < end; i++)
+                total += (points[i].position - points[i - 1].position).sqrMagnitude;
+
+            return Mathf.Sqrt(total);
         }
 #endif
     }
