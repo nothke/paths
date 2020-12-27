@@ -279,7 +279,7 @@ namespace Nothke.Paths
             return Mathf.Sqrt(total);
         }
 
-        public Vector3 GetClosestPointOnPath(in Vector3 source, out int segmentIndex)
+        public Vector3 GetClosestPointOnPath(in Vector3 source, out int segmentIndex, out float alongPath)
         {
             throw new System.NotImplementedException();
         }

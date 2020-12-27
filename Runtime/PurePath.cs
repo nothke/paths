@@ -123,32 +123,36 @@ namespace Nothke.Paths
             throw new System.NotImplementedException();
         }
 
-        public Vector3 GetClosestPointOnPath(in Vector3 source, out int segmentIndex)
+        public Vector3 GetClosestPointOnPath(in Vector3 source, out int segmentIndex, out float alongPath)
         {
             float closestD = Mathf.Infinity;
             Vector3 closestP = default;
             segmentIndex = 0;
+            float alongSegment = 0;
 
             for (int i = 0; i < points.Length - 1; i++)
             {
-                Vector3 p = ClosestPointOnLine(points[i], points[i + 1], source);
+                Vector3 p = ClosestPointOnLine(points[i], points[i + 1], source, out float _alongSegment);
                 float d = (p - source).magnitude;
+
                 if (d < closestD)
                 {
                     closestP = p;
                     closestD = d;
                     segmentIndex = i;
+                    alongSegment = _alongSegment;
                 }
             }
 
+            alongPath = GetDistanceTo(segmentIndex) + alongSegment;
             return closestP;
         }
 
-        public static Vector3 ClosestPointOnLine(in Vector3 p1, in Vector3 p2, in Vector3 v)
+        public static Vector3 ClosestPointOnLine(in Vector3 p1, in Vector3 p2, in Vector3 v, out float d)
         {
             Vector3 diff = p2 - p1;
             float length = diff.magnitude;
-            float d = Vector3.Dot(v - p1, diff) / length;
+            d = Vector3.Dot(v - p1, diff) / length;
             d = Mathf.Clamp(d, 0, length);
             return p1 + diff / length * d;
         }
