@@ -250,7 +250,7 @@ namespace Nothke.Paths
 
         public Vector3 DirectionAt(int i)
         {
-            throw new System.NotImplementedException();
+            return points[i].transform.forward;
         }
 
         Vector3 IPath.GetNext(int i)
