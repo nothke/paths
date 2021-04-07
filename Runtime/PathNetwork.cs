@@ -128,9 +128,9 @@ namespace Nothke.Paths
                 return new Node(null, -1);
             }
 
-            // Remove paths that don't match the type
             for (int i = closeNodesBuffer.Count - 1; i >= 0; i--)
             {
+                // Remove paths that don't match the type
                 if (!TypeBelongsToMask(vehicleType, closeNodesBuffer[i].path.vehicleMask))
                     closeNodesBuffer.RemoveAt(i);
             }
@@ -141,21 +141,20 @@ namespace Nothke.Paths
                 return new Node(null, -1);
             }
 
-            int iterations = 10;
-
-            for (int i = 0; i < iterations; i++)
+            for (int i = closeNodesBuffer.Count - 1; i >= 0; i--)
             {
-                Node node = closeNodesBuffer[Random.Range(0, closeNodesBuffer.Count)];
-
-                if (node.index == 0)
-                {
-                    //Debug.Log($"Found path {node.GetPosition()}");
-                    //Debug.DrawRay(node.GetPosition(), Vector3.right * 500 + Vector3.up * 500, Color.green, 10);
-                    return node;
-                }
+                // Remove paths that are going the opposite way
+                if (closeNodesBuffer[i].index > 0)
+                    closeNodesBuffer.RemoveAt(i);
             }
 
-            //Debug.Log($"{name} did not find acceptable path in {iterations} iterations", gameObject);
+            if (closeNodesBuffer.Count == 0)
+            {
+                Debug.LogError($"Found no valid paths that continue onto path", inNode.path);
+                return new Node(null, -1);
+            }
+            
+            Node node = closeNodesBuffer[Random.Range(0, closeNodesBuffer.Count)];
             return new Node(null, -1);
         }
 
