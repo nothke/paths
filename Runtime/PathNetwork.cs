@@ -22,6 +22,9 @@ namespace Nothke.Paths
         {
             e = this;
 
+            closeNodesBuffer = new List<Node>(8);
+            endsBuffer = new List<End>(8);
+
             if (buildAtStart)
                 RebuildNetwork(true);
         }
