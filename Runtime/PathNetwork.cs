@@ -51,6 +51,7 @@ namespace Nothke.Paths
             }
         }
 
+        [System.Obsolete("This only gets a single next path and doesn't support branching, use GetClosebyEnds() instead")]
         public Path GetNextPath(Path inPath, bool first, out bool outPathFirst)
         {
             Vector3 queryPoint = first ? inPath.First : inPath.Last;
@@ -113,7 +114,6 @@ namespace Nothke.Paths
 
         public Node GetNextNode(Node inNode, Vector3 queryPoint, VehicleType vehicleType)
         {
-
             RebuildNetworkIfNecessary();
 
             //GetClosebyEndNodes(closeNodesBuffer, inNode);
