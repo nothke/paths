@@ -123,6 +123,9 @@ namespace Nothke.Paths
         {
             float total = 0;
 
+            if (points == null || points.Length == 0)
+                return total;
+
             for (int i = 1; i < points.Length; i++)
             {
                 total += Vector3.Distance(
