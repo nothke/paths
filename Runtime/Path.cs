@@ -91,6 +91,8 @@ namespace Nothke.Paths
             {
                 children[i].SetSiblingIndex(childCount - 1 - i);
             }
+
+            GetFromChildren();
         }
 
         public bool IsValid()
