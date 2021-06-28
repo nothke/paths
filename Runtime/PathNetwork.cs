@@ -115,6 +115,36 @@ namespace Nothke.Paths
             return node;
         }
 
+        public Path GetNextRandomPathForVehicle(Node inNode, VehicleType vehicleType)
+        {
+            RebuildNetworkIfNecessary();
+
+            GetClosebyEndNodes(allPaths, closeNodesBuffer, inNode.path, inNode.index, autoSearchRadius, false, true);
+
+            if (closeNodesBuffer.Count == 0)
+            {
+                Debug.LogWarning("Terminating path");
+                return null;
+            }
+
+            for (int i = closeNodesBuffer.Count - 1; i >= 0; i--)
+            {
+                // Remove paths that don't match the type
+                if (!TypeBelongsToMask(vehicleType, closeNodesBuffer[i].path.vehicleMask))
+                    closeNodesBuffer.RemoveAt(i);
+            }
+
+            if (closeNodesBuffer.Count == 0)
+            {
+                Debug.LogError($"Found paths but no matching type for {vehicleType}");
+                return null;
+            }
+
+            Node node = closeNodesBuffer[Random.Range(0, closeNodesBuffer.Count)];
+            return node.path;
+        }
+
+        [System.Obsolete("Use GetNextRandomPathForVehicle instead")]
         public Node GetNextNode(Node inNode, Vector3 queryPoint, VehicleType vehicleType)
         {
             RebuildNetworkIfNecessary();
@@ -233,7 +263,7 @@ namespace Nothke.Paths
             }
         }
 
-        public static void GetClosebyEndNodes(Path[] allPaths, List<Node> closeNodes, Path inPath, int pointIndex, float searchRadius, bool includeSelf = false)
+        public static void GetClosebyEndNodes(Path[] allPaths, List<Node> closeNodes, Path inPath, int pointIndex, float searchRadius, bool includeSelf = false, bool onlyForwardFacing = false)
         {
             closeNodes.Clear();
 
@@ -249,7 +279,7 @@ namespace Nothke.Paths
                 if ((path.First - inPos).sqrMagnitude < searchRadiusSqr)
                     closeNodes.Add(new Node(path, path.FirstIndex));
 
-                if ((path.Last - inPos).sqrMagnitude < searchRadiusSqr)
+                if (!onlyForwardFacing && (path.Last - inPos).sqrMagnitude < searchRadiusSqr)
                     closeNodes.Add(new Node(path, path.LastIndex - 1));
             }
         }
