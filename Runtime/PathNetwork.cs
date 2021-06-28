@@ -153,7 +153,7 @@ namespace Nothke.Paths
                 Debug.LogError($"Found no valid paths that continue onto path", inNode.path);
                 return new Node(null, -1);
             }
-            
+
             Node node = closeNodesBuffer[Random.Range(0, closeNodesBuffer.Count)];
             return new Node(null, -1);
         }
@@ -212,7 +212,7 @@ namespace Nothke.Paths
             return endsBuffer;
         }
 
-        public static void GetClosebyEnds(Path[] allPaths, List<End> closeEnds, Path inPath, int pointIndex, float searchRadius, bool includeSelf = false)
+        public static void GetClosebyEnds(Path[] allPaths, List<End> closeEnds, Path inPath, int pointIndex, float searchRadius, bool includeSelf = false, bool onlyForwardFacing = false)
         {
             closeEnds.Clear();
 
@@ -228,7 +228,7 @@ namespace Nothke.Paths
                 if ((path.First - inPos).sqrMagnitude < searchRadiusSqr)
                     closeEnds.Add(new End() { path = path, isLast = false });
 
-                if ((path.Last - inPos).sqrMagnitude < searchRadiusSqr)
+                if (!onlyForwardFacing && (path.Last - inPos).sqrMagnitude < searchRadiusSqr)
                     closeEnds.Add(new End() { path = path, isLast = true });
             }
         }
@@ -282,6 +282,33 @@ namespace Nothke.Paths
 
             outPathFirst = false;
             return null;
+        }
+
+        [ContextMenu("Find Disconnected")]
+        public void FindDisconnectedEnds()
+        {
+            Path[] paths = FindObjectsOfType<Path>();
+
+            Debug.Log("Found " + paths.Length + " paths");
+
+            var ends = new List<End>();
+            int ct = 0;
+
+            foreach (var path in paths)
+            {
+                GetClosebyEnds(paths, ends, path, path.LastIndex, autoSearchRadius, false, true);
+                //Debug.Log($"Path: {path.name}, ends ct: {ends.Count}");
+                if (ends.Count == 0)
+                {
+                    Debug.LogWarning($"Path: {path.name} has no ends", path);
+                    Debug.DrawRay(path.Last, Vector3.up * 100, Color.red, 10);
+                    ct++;
+                }
+
+                ends.Clear();
+            }
+
+            Debug.Log($"Found {ct} disconnected ends");
         }
     }
 }
