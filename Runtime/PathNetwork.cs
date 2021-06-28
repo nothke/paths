@@ -289,7 +289,7 @@ namespace Nothke.Paths
         {
             Path[] paths = FindObjectsOfType<Path>();
 
-            Debug.Log("Found " + paths.Length + " paths");
+            Debug.Log("Found " + paths.Length + " paths. Looking for terminations:");
 
             var ends = new List<End>();
             int ct = 0;
@@ -308,7 +308,10 @@ namespace Nothke.Paths
                 ends.Clear();
             }
 
-            Debug.Log($"Found {ct} disconnected ends");
+            if (ct == 0)
+                Debug.Log("Found no disconnected paths");
+            else
+                Debug.LogWarning($"Found {ct} disconnected ends.");
         }
     }
 }
