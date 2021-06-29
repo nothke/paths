@@ -247,6 +247,7 @@ namespace Nothke.Paths
                 }
             }
         }
+#endif
 
         public Vector3 PositionAt(int i)
         {
@@ -288,6 +289,5 @@ namespace Nothke.Paths
         {
             throw new System.NotImplementedException();
         }
-#endif
     }
 }
