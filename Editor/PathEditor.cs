@@ -26,10 +26,16 @@ namespace Nothke.Paths
             //EditorGUILayout.PropertyField(prop);
 
             if (GUILayout.Button("Update from children"))
+            {
                 component.GetFromChildren();
+                SceneView.RepaintAll();
+            }
 
             if (GUILayout.Button("Reverse"))
+            {
                 component.Reverse();
+                SceneView.RepaintAll();
+            }
 
             GUILayout.Label("Length: " + component.GetLength());
 

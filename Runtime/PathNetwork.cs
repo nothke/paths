@@ -7,12 +7,15 @@ namespace Nothke.Paths
     public interface IPathNetwork
     {
         void RebuildNetwork();
+
         INode GetClosestNode(Vector3 position);
+        Vector3 GetClosestPoint(Vector3 position, out INode node, out float alongPath);
 
         List<IEnd> GetClosebyEnds(IPath inPath, int pointIndex, float searchRadius = 0);
+
     }
 
-    public class PathNetwork : MonoBehaviour
+    public class PathNetwork : MonoBehaviour, IPathNetwork
     {
         public static PathNetwork e;
 
@@ -342,6 +345,47 @@ namespace Nothke.Paths
                 Debug.Log("Found no disconnected paths");
             else
                 Debug.LogWarning($"Found {ct} disconnected ends.");
+        }
+
+        INode IPathNetwork.GetClosestNode(Vector3 position)
+        {
+            return GetClosestNode(position);
+        }
+
+        public Vector3 GetClosestPoint(Vector3 position, out INode node, out float alongPath)
+        {
+            float minDistance = Mathf.Infinity;
+            Vector3 minPoint = default;
+            Node _node = new Node();
+
+            foreach (var path in allPaths)
+            {
+                for (int i = 0; i < path.knots.Length; i++)
+                {
+                    float distance = Vector3.SqrMagnitude(path.knots[i] - position);
+
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+
+                        minPoint = path.knots[i];
+
+                        _node.path = path;
+                        _node.index = i;
+                    }
+                }
+            }
+
+            alongPath = 0;
+            node = _node;
+            return minPoint;
+        }
+
+        public List<IEnd> GetClosebyEnds(IPath inPath, int pointIndex, float searchRadius = 0)
+        {
+            Path path = inPath as Path;
+            var ends = GetClosebyEnds(path, pointIndex, searchRadius);
+            return ends.ConvertAll(x => (IEnd)x);
         }
     }
 }
