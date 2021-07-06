@@ -148,6 +148,8 @@ namespace Nothke.Paths
 
             Vector3 up = Vector3.up * options.pointCrossesSize;
 
+            var origRandState = Random.state;
+
             Color pathColor;
             switch (options.colorMode)
             {
@@ -177,6 +179,8 @@ namespace Nothke.Paths
 
                 default: pathColor = color; break;
             }
+
+            Random.state = origRandState;
 
             for (int i = 0; i < points.Length - 1; i++)
             {
