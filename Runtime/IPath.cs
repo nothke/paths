@@ -12,6 +12,7 @@ namespace Nothke.Paths
         int PointCount { get; }
 
         Vector3 PositionAt(int i);
+        Vector3 PositionAlong(float along);
         Vector3 DirectionAt(int i);
         Vector3 GetNext(int i);
         Vector3 GetPrevious(int i);

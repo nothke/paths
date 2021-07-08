@@ -74,6 +74,7 @@ namespace Nothke.Paths
         {
             Vector3 lastp = points[0];
             Color color = Random.ColorHSV(0, 1, 1, 1, 1, 1);
+            color.a = 0.5f;
             for (int i = 1; i < points.Length; i++)
             {
                 Vector3 thisp = points[i];
@@ -155,6 +156,31 @@ namespace Nothke.Paths
             d = Vector3.Dot(v - p1, diff) / length;
             d = Mathf.Clamp(d, 0, length);
             return p1 + diff / length * d;
+        }
+
+        public Vector3 PositionAlong(float along)
+        {
+            if (along <= 0)
+                return First;
+            else if (along > Length)
+                return Last;
+
+            for (int i = 1; i < points.Length; i++)
+            {
+                float pointAlong = GetDistanceTo(i);
+
+                // is between last 2 points
+                if (pointAlong > along)
+                {
+                    Vector3 p0 = this[i - 1];
+                    Vector3 p1 = this[i];
+
+                    float diff = pointAlong - along;
+                    return p1 + (p0 - p1).normalized * diff;
+                }
+            }
+
+            return Vector3.zero;
         }
     }
 }
