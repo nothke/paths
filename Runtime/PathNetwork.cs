@@ -4,17 +4,6 @@ using System.Collections.Generic;
 
 namespace Nothke.Paths
 {
-    public interface IPathNetwork
-    {
-        void RebuildNetwork();
-
-        INode GetClosestNode(Vector3 position);
-        Vector3 GetClosestPoint(Vector3 position, out INode node, out float alongPath);
-
-        List<IEnd> GetClosebyEnds(IPath inPath, int pointIndex, float searchRadius = 0);
-
-    }
-
     public class PathNetwork : MonoBehaviour, IPathNetwork
     {
         public static PathNetwork e;
