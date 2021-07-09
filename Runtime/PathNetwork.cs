@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Nothke.Paths
 {
-    public class PathNetwork : MonoBehaviour, IPathNetwork
+    public class PathNetwork : MonoBehaviour, IPathNetwork<Path>
     {
         public static PathNetwork e;
 
@@ -14,8 +14,8 @@ namespace Nothke.Paths
         {
             e = this;
 
-            closeNodesBuffer = new List<Node>(8);
-            endsBuffer = new List<End>(8);
+            closeNodesBuffer = new List<PathNode<Path>>(8);
+            endsBuffer = new List<PathEnd<Path>>(8);
 
             if (buildAtStart)
                 RebuildNetwork(true);
@@ -24,8 +24,8 @@ namespace Nothke.Paths
         public Path[] allPaths;
         public float autoSearchRadius = 0.2f;
 
-        List<Node> closeNodesBuffer = new List<Node>();
-        List<End> endsBuffer = new List<End>();
+        List<PathNode<Path>> closeNodesBuffer = new List<PathNode<Path>>();
+        List<PathEnd<Path>> endsBuffer = new List<PathEnd<Path>>();
 
         [ContextMenu("Rebuild Network")]
         public void RebuildNetwork()
@@ -80,11 +80,11 @@ namespace Nothke.Paths
             //RebuildNetwork();
         }
 
-        public Node GetClosestNode(Vector3 position)
+        public PathNode<Path> GetClosestNode(Vector3 position)
         {
             RebuildNetworkIfNecessary();
 
-            Node node = new Node();
+            var node = new PathNode<Path>();
 
             float minDistance = Mathf.Infinity;
 
@@ -98,8 +98,8 @@ namespace Nothke.Paths
                     {
                         minDistance = distance;
 
-                        node.path = path;
-                        node.index = i;
+                        node.Path = path;
+                        node.Index = i;
                     }
                 }
             }
@@ -107,11 +107,11 @@ namespace Nothke.Paths
             return node;
         }
 
-        public Path GetNextRandomPathForVehicle(Node inNode, VehicleType vehicleType)
+        public Path GetNextRandomPathForVehicle(PathNode<Path> inNode, VehicleType vehicleType)
         {
             RebuildNetworkIfNecessary();
 
-            GetClosebyEndNodes(allPaths, closeNodesBuffer, inNode.path, inNode.index, autoSearchRadius, false, true);
+            GetClosebyEndNodes(allPaths, closeNodesBuffer, inNode.Path, inNode.Index, autoSearchRadius, false, true);
 
             if (closeNodesBuffer.Count == 0)
             {
@@ -122,7 +122,7 @@ namespace Nothke.Paths
             for (int i = closeNodesBuffer.Count - 1; i >= 0; i--)
             {
                 // Remove paths that don't match the type
-                if (!TypeBelongsToMask(vehicleType, closeNodesBuffer[i].path.vehicleMask))
+                if (!TypeBelongsToMask(vehicleType, closeNodesBuffer[i].Path.vehicleMask))
                     closeNodesBuffer.RemoveAt(i);
             }
 
@@ -132,52 +132,8 @@ namespace Nothke.Paths
                 return null;
             }
 
-            Node node = closeNodesBuffer[Random.Range(0, closeNodesBuffer.Count)];
-            return node.path;
-        }
-
-        [System.Obsolete("Use GetNextRandomPathForVehicle instead")]
-        public Node GetNextNode(Node inNode, Vector3 queryPoint, VehicleType vehicleType)
-        {
-            RebuildNetworkIfNecessary();
-
-            //GetClosebyEndNodes(closeNodesBuffer, inNode);
-            GetClosebyEndNodes(allPaths, closeNodesBuffer, inNode.path, inNode.index, autoSearchRadius, false);
-
-            if (closeNodesBuffer.Count == 0)
-            {
-                //Debug.Log("Reached end of path");
-                return new Node(null, -1);
-            }
-
-            for (int i = closeNodesBuffer.Count - 1; i >= 0; i--)
-            {
-                // Remove paths that don't match the type
-                if (!TypeBelongsToMask(vehicleType, closeNodesBuffer[i].path.vehicleMask))
-                    closeNodesBuffer.RemoveAt(i);
-            }
-
-            if (closeNodesBuffer.Count == 0)
-            {
-                Debug.LogError($"Found paths but no matching type for {vehicleType}");
-                return new Node(null, -1);
-            }
-
-            for (int i = closeNodesBuffer.Count - 1; i >= 0; i--)
-            {
-                // Remove paths that are going the opposite way
-                if (closeNodesBuffer[i].index > 0)
-                    closeNodesBuffer.RemoveAt(i);
-            }
-
-            if (closeNodesBuffer.Count == 0)
-            {
-                Debug.LogError($"Found no valid paths that continue onto path", inNode.path);
-                return new Node(null, -1);
-            }
-
-            Node node = closeNodesBuffer[Random.Range(0, closeNodesBuffer.Count)];
-            return new Node(null, -1);
+            PathNode<Path> node = closeNodesBuffer[Random.Range(0, closeNodesBuffer.Count)];
+            return node.Path;
         }
 
         public static bool TypeBelongsToMask(VehicleType type, VehicleMask mask)
@@ -191,50 +147,13 @@ namespace Nothke.Paths
             return result;
         }
 
-        /*
-        [System.Obsolete]
-        public void GetClosebyEndNodes(List<Node> closeNodes, Node inNode, bool includeSelf = false)
-        {
-            //List<Node> closeNodes = new List<Node>();
-            closeNodes.Clear();
-
-            Vector3 inPos = inNode.GetPosition();
-            //Debug.DrawRay(inPos, -Vector3.up * 1000, Color.cyan, 10);
-
-            foreach (var path in allPaths)
-            {
-                if (!path.IsValid()) continue;
-                if (!includeSelf && path == inNode.path) continue; // prevents returning
-
-                Node node = new Node();
-
-                //Debug.DrawRay(path.First.position, Vector3.up * 1000, Color.red, 10);
-
-                if ((path.First.position - inPos).magnitude < autoSearchRadius)
-                {
-                    node.path = path;
-                    node.index = path.FirstIndex;
-                    closeNodes.Add(node);
-                }
-
-                if ((path.Last.position - inPos).magnitude < autoSearchRadius)
-                {
-                    node.path = path;
-                    node.index = path.LastIndex;
-                    closeNodes.Add(node);
-                }
-            }
-
-            //Debug.Log($"Found nodes: {closeNodes.Count}");
-        }*/
-
-        public List<End> GetClosebyEnds(Path inPath, int pointIndex, float searchRadius = 0)
+        public List<PathEnd<Path>> GetClosebyEnds(Path inPath, int pointIndex, float searchRadius = 0)
         {
             GetClosebyEnds(allPaths, endsBuffer, inPath, pointIndex, searchRadius != 0 ? searchRadius : autoSearchRadius);
             return endsBuffer;
         }
 
-        public static void GetClosebyEnds(Path[] allPaths, List<End> closeEnds, Path inPath, int pointIndex, float searchRadius, bool includeSelf = false, bool onlyForwardFacing = false)
+        public static void GetClosebyEnds(Path[] allPaths, List<PathEnd<Path>> closeEnds, Path inPath, int pointIndex, float searchRadius, bool includeSelf = false, bool onlyForwardFacing = false)
         {
             closeEnds.Clear();
 
@@ -248,14 +167,14 @@ namespace Nothke.Paths
                 if (!includeSelf && path == inPath) continue; // prevents returning
 
                 if ((path.First - inPos).sqrMagnitude < searchRadiusSqr)
-                    closeEnds.Add(new End() { path = path, isLast = false });
+                    closeEnds.Add(new PathEnd<Path>() { Path = path, IsLast = false });
 
                 if (!onlyForwardFacing && (path.Last - inPos).sqrMagnitude < searchRadiusSqr)
-                    closeEnds.Add(new End() { path = path, isLast = true });
+                    closeEnds.Add(new PathEnd<Path>() { Path = path, IsLast = true });
             }
         }
 
-        public static void GetClosebyEndNodes(Path[] allPaths, List<Node> closeNodes, Path inPath, int pointIndex, float searchRadius, bool includeSelf = false, bool onlyForwardFacing = false)
+        public static void GetClosebyEndNodes(Path[] allPaths, List<PathNode<Path>> closeNodes, Path inPath, int pointIndex, float searchRadius, bool includeSelf = false, bool onlyForwardFacing = false)
         {
             closeNodes.Clear();
 
@@ -269,10 +188,10 @@ namespace Nothke.Paths
                 if (!includeSelf && path == inPath) continue; // prevents returning
 
                 if ((path.First - inPos).sqrMagnitude < searchRadiusSqr)
-                    closeNodes.Add(new Node(path, path.FirstIndex));
+                    closeNodes.Add(new PathNode<Path>(path, path.FirstIndex));
 
                 if (!onlyForwardFacing && (path.Last - inPos).sqrMagnitude < searchRadiusSqr)
-                    closeNodes.Add(new Node(path, path.LastIndex - 1));
+                    closeNodes.Add(new PathNode<Path>(path, path.LastIndex - 1));
             }
         }
 
@@ -313,7 +232,7 @@ namespace Nothke.Paths
 
             Debug.Log("Found " + paths.Length + " paths. Looking for terminations:");
 
-            var ends = new List<End>();
+            var ends = new List<PathEnd<Path>>();
             int ct = 0;
 
             foreach (var path in paths)
@@ -336,16 +255,11 @@ namespace Nothke.Paths
                 Debug.LogWarning($"Found {ct} disconnected ends.");
         }
 
-        INode IPathNetwork.GetClosestNode(Vector3 position)
-        {
-            return GetClosestNode(position);
-        }
-
-        public Vector3 GetClosestPoint(Vector3 position, out INode node, out float alongPath)
+        public Vector3 GetClosestPoint(Vector3 position, out PathNode<Path> node, out float alongPath)
         {
             float minDistance = Mathf.Infinity;
             Vector3 minPoint = default;
-            Node _node = new Node();
+            var _node = new PathNode<Path>();
 
             foreach (var path in allPaths)
             {
@@ -359,8 +273,8 @@ namespace Nothke.Paths
 
                         minPoint = path.knots[i];
 
-                        _node.path = path;
-                        _node.index = i;
+                        _node.Path = path;
+                        _node.Index = i;
                     }
                 }
             }
@@ -368,13 +282,6 @@ namespace Nothke.Paths
             alongPath = 0;
             node = _node;
             return minPoint;
-        }
-
-        public List<IEnd> GetClosebyEnds(IPath inPath, int pointIndex, float searchRadius = 0)
-        {
-            Path path = inPath as Path;
-            var ends = GetClosebyEnds(path, pointIndex, searchRadius);
-            return ends.ConvertAll(x => (IEnd)x);
         }
     }
 }

@@ -3,48 +3,9 @@ using System.Collections;
 
 namespace Nothke.Paths
 {
-    public struct End : IEnd
-    {
-        public Path path;
-        public bool isLast;
-
-        public int Index { get { return isLast ? path.points.Length - 1 : 0; } }
-
-        public IPath Path { get => path; set => path = (Path)value; }
-        public bool IsLast { get => isLast; set => isLast = value; }
-
-        public Vector3 GetPosition()
-        {
-            int i = Index;
-            return path.points[Index].position;
-        }
-
-        public Node GetNode()
-        {
-            return new Node(path, Index);
-        }
-
-        public Vector3 GetOutDirection()
-        {
-            Vector3 p1, p2;
-
-            if (isLast)
-            {
-                p1 = path.points[path.points.Length - 1].position;
-                p2 = path.points[path.points.Length - 2].position;
-            }
-            else
-            {
-                p1 = path.points[0].position;
-                p2 = path.points[1].position;
-            }
-
-            return (p2 - p1).normalized;
-        }
-    }
-
+    /*
     [System.Serializable]
-    public struct Node : INode
+    public struct Node
     {
         public Path path;
         public int index;
@@ -89,4 +50,5 @@ namespace Nothke.Paths
             return new Node(path, index - 1);
         }
     }
+    */
 }

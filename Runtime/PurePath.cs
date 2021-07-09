@@ -4,20 +4,6 @@ using UnityEngine;
 
 namespace Nothke.Paths
 {
-    public struct PureNode : INode
-    {
-        public IPath Path { get; set; }
-        public int Index { get; set; }
-    }
-
-    public struct PureEnd : IEnd
-    {
-        public IPath Path { get; set; }
-        public bool IsLast { get; set; }
-
-        public Vector3 Position { get { return IsLast ? Path.Last : Path.First; } }
-    }
-
     [System.Serializable]
     public class PurePath : IPath
     {
