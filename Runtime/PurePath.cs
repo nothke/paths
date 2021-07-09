@@ -18,6 +18,11 @@ namespace Nothke.Paths
 
         public Vector3 this[int i] { get => points[i]; }
 
+#if UNITY_EDITOR
+        public string name;
+        public string Name => name;
+#endif
+
         public float GetLengthOfSegmentAfter(int i)
         {
             if (i > 0 && i < points.Length - 1)
@@ -71,6 +76,10 @@ namespace Nothke.Paths
 
         public static PurePath FromTransforms(Transform[] transforms)
         {
+#if UNITY_EDITOR
+            string _name = transforms[0].parent != null ? transforms[0].parent.name : "noname";
+#endif
+
             Vector3[] points = new Vector3[transforms.Length];
             for (int i = 0; i < transforms.Length; i++)
             {
@@ -79,6 +88,10 @@ namespace Nothke.Paths
 
             PurePath path = new PurePath()
             {
+#if UNITY_EDITOR
+                name = _name,
+#endif
+
                 points = points
             };
 

@@ -18,14 +18,14 @@ namespace Nothke.Paths
             Gizmos.DrawLine(mid, mid - (dir - right) * scale);
         }
 
-        public static void DrawPath(IPath path, float directionArrowScale = 1, float pointCrossScale = 0, float heightOffset = 0)
+        public static void DrawPath(IPath path, float directionArrowScale = 1, float pointCrossScale = 0, Vector3 offset = default)
         {
             Vector3 up = Vector3.up;
 
             for (int i = 0; i < path.PointCount - 1; i++)
             {
-                Vector3 p0 = path[i] + up * heightOffset;
-                Vector3 p1 = path[i + 1] + up * heightOffset;
+                Vector3 p0 = path[i] + offset;
+                Vector3 p1 = path[i + 1] + offset;
 
                 Gizmos.DrawLine(p0, p1);
 
@@ -48,7 +48,7 @@ namespace Nothke.Paths
             }
         }
 
-        public static void DrawPath(IPath path, float fromAlong, float toAlong, float directionArrowScale = 1, float pointCrossScale = 0, float heightOffset = 0)
+        public static void DrawPath(IPath path, float fromAlong, float toAlong, float directionArrowScale = 1, float pointCrossScale = 0, Vector3 offset = default)
         {
             if (fromAlong > toAlong)
                 return;
@@ -82,8 +82,8 @@ namespace Nothke.Paths
                     p1 = path.PositionAlong(toAlong);
                 }
 
-                p0 += up * heightOffset;
-                p1 += up * heightOffset;
+                p0 += offset;
+                p1 += offset;
 
                 Gizmos.DrawLine(p0, p1);
 

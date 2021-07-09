@@ -23,6 +23,11 @@ namespace Nothke.Paths
         Vector3 this[int i] { get; }
 
         Vector3 GetClosestPointOnPath(in Vector3 source, out int segmentIndex, out float alongPath);
+
+#if UNITY_EDITOR
+        // For debugging only
+        string Name { get; }
+#endif
     }
 
     public interface IPathNetwork<P> where P : IPath

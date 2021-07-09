@@ -29,6 +29,8 @@ namespace Nothke.Paths
 #if UNITY_EDITOR
         [Header("Presentation")]
         [SerializeField] Color color = Color.blue;
+
+        public string Name => name;
 #endif
 
         public Vector3 First { get { return points[0].position; } }
@@ -39,6 +41,7 @@ namespace Nothke.Paths
 
         public float Length => GetLength();
         public int PointCount => points.Length;
+
 
         public void BuildKnots()
         {
