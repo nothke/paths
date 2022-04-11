@@ -3,7 +3,6 @@ using System.Collections;
 
 namespace Nothke.Paths
 {
-    /*
     [System.Serializable]
     public struct Node
     {
@@ -50,5 +49,4 @@ namespace Nothke.Paths
             return new Node(path, index - 1);
         }
     }
-    */
 }
