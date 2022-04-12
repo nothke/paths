@@ -1,28 +1,18 @@
-﻿#define SPLIT_EVENLY
-
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
-#if SPLIT_EVENLY
-using Nothke.Utilities;
-#endif
+using UnityEngine;
 
 namespace Nothke.Paths
 {
-    public interface IPathCustomType
-    {
-        Color lineColor { get; }
-    }
-
-    public class Path : MonoBehaviour, IPath
+    public class GameObjectlessPath : MonoBehaviour, IPath
     {
         public VehicleMask vehicleMask = VehicleMask.All;
 
         public bool noSpawn;
 
-        public Transform[] points;
-        public Vector3 this[int i] { get => points[i].position; }
+        //public Transform[] points;
+        public Vector3[] points;
+        public Vector3 this[int i] => PositionAt(i);
 
         public Vector3[] knots;
 
@@ -33,8 +23,8 @@ namespace Nothke.Paths
         public string Name => name;
 #endif
 
-        public Vector3 First { get { return points[0].position; } }
-        public Vector3 Last { get { return points[points.Length - 1].position; } }
+        public Vector3 First { get { return PositionAt(0); } }
+        public Vector3 Last { get { return PositionAt(points.Length - 1); } }
 
         public int LastIndex { get { return points.Length - 1; } }
         public int FirstIndex { get { return 0; } }
@@ -49,10 +39,10 @@ namespace Nothke.Paths
             for (int i = 0; i < points.Length - 1; i++)
             {
 #if SPLIT_EVENLY
-                var nodesOfPath = VectorUtils.SplitEvenly(points[i].position, points[i + 1].position, 1);
+                var nodesOfPath = VectorUtils.SplitEvenly(PositionAt(i), PositionAt(i + 1), 1);
                 knotsList.AddRange(nodesOfPath);
 #else
-            knotsList.Add(points[i].position);
+                knotsList.Add(PositionAt(i));
 #endif
             }
 
@@ -69,11 +59,11 @@ namespace Nothke.Paths
         [ContextMenu("Get From Children")]
         public void GetFromChildren()
         {
-            points = new Transform[transform.childCount];
+            points = new Vector3[transform.childCount];
 
             for (int i = 0; i < points.Length; i++)
             {
-                points[i] = transform.GetChild(i);
+                points[i] = transform.GetChild(i).localPosition;
             }
 
         }
@@ -106,20 +96,20 @@ namespace Nothke.Paths
             return true;
         }
 
-        public Transform GetNext(int current)
+        public Vector3 GetNext(int current)
         {
-            if (current == LastIndex)
-                return null;
+            if (current >= LastIndex)
+                return PositionAt(current);
             else
-                return points[current + 1];
+                return PositionAt(current + 1);
         }
 
-        public Transform GetPrevious(int current)
+        public Vector3 GetPrevious(int current)
         {
-            if (current == 0)
-                return null;
+            if (current <= 0)
+                return PositionAt(current);
             else
-                return points[current - 1];
+                return PositionAt(current - 1);
         }
 
         public float GetLength()
@@ -132,8 +122,8 @@ namespace Nothke.Paths
             for (int i = 1; i < points.Length; i++)
             {
                 total += Vector3.Distance(
-                    points[i - 1].position,
-                    points[i].position);
+                    PositionAt(i - 1),
+                    PositionAt(i));
             }
 
             return total;
@@ -160,12 +150,15 @@ namespace Nothke.Paths
 
                 case PathVisibilityOptions.ColorMode.Random:
                     {
+                        var state = Random.state;
+
                         int id = GetInstanceID();
                         Random.InitState(id);
                         pathColor = Utils.Oklab.OklchToColor(1, 0.3f, Random.value);
+
+                        Random.state = state;
                     }
                     break;
-
 
                 case PathVisibilityOptions.ColorMode.SpawnAllowed:
                     pathColor = noSpawn ? Color.red : Color.yellow;
@@ -190,8 +183,8 @@ namespace Nothke.Paths
 
             for (int i = 0; i < points.Length - 1; i++)
             {
-                Vector3 p0 = points[i].position;
-                Vector3 p1 = points[i + 1].position;
+                Vector3 p0 = PositionAt(i);
+                Vector3 p1 = PositionAt(i + 1);
 
                 Gizmos.color = pathColor;
                 Gizmos.DrawLine(p0, p1);
@@ -243,8 +236,8 @@ namespace Nothke.Paths
                 for (int i = 0; i < points.Length - 1; i++)
                 {
                     //Vector3 up = Vector3.up * 0.1f;
-                    Vector3 p0 = points[i].position;
-                    Vector3 p1 = points[i + 1].position;
+                    Vector3 p0 = PositionAt(i);
+                    Vector3 p1 = PositionAt(i + 1);
 
                     Gizmos.color = options.highlightSelectedColor;
                     Gizmos.DrawLine(p0, p1);
@@ -261,28 +254,37 @@ namespace Nothke.Paths
 
         public Vector3 PositionAt(int i)
         {
-            return points[i].position;
+            return transform.TransformPoint(points[i]);
         }
 
         public Vector3 DirectionAt(int i)
         {
-            return points[i].transform.forward;
+            if (PointCount <= 1)
+                return Vector3.forward;
+
+            if (i == 0)
+                return (PositionAt(1) - PositionAt(0)).normalized;
+            else if (i == LastIndex)
+                return (PositionAt(LastIndex - 1) - Last).normalized;
+            else
+                return (PositionAt(i + 1) - PositionAt(i - 1)).normalized;
         }
 
+        /*
         Vector3 IPath.GetNext(int i)
         {
-            return GetNext(i).position;
+            return GetNext(i);
         }
 
         Vector3 IPath.GetPrevious(int i)
         {
-            return GetPrevious(i).position;
-        }
+            return GetPrevious(i);
+        }*/
 
         public float GetLengthOfSegmentAfter(int i)
         {
             if (i > 0 && i < points.Length - 1)
-                return (points[i + 1].position - points[i].position).magnitude;
+                return (PositionAt(i + 1) - PositionAt(i)).magnitude;
             else return 0;
         }
 
@@ -294,10 +296,10 @@ namespace Nothke.Paths
                 return Length;
 
             float total = 0;
-            Vector3 p = points[0].position;
+            Vector3 p = PositionAt(0);
             for (int i = 1; i < end + 1; i++)
             {
-                Vector3 p1 = points[i].position;
+                Vector3 p1 = PositionAt(i);
                 total += (p1 - p).magnitude;
                 p = p1;
             }
