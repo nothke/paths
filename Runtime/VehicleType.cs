@@ -29,3 +29,16 @@ public enum VehicleMask
     PublicTransport = Bus | Trolleybus | Tram | Taxi,
 }
 
+public static class VehicleMaskUtils
+{
+    public static bool BelongsToMask(this VehicleType type, VehicleMask mask)
+    {
+        int vt = (int)type;
+        int bm = (int)mask;
+        bool result = ((1 << vt) & bm) != 0;
+
+        //Debug.Log($"{System.Convert.ToString(bm, 2)} {vt} == {result}");
+
+        return result;
+    } 
+}

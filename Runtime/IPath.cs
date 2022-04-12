@@ -30,6 +30,13 @@ namespace Nothke.Paths
 #endif
     }
 
+    public interface IPathWithKnots
+    {
+        void RebuldKnots();
+        int KnotCount();
+        Vector3 GetKnot(int i);
+    }
+
     public interface IPathNetwork<P> where P : IPath
     {
         void RebuildNetwork();
@@ -38,7 +45,6 @@ namespace Nothke.Paths
         Vector3 GetClosestPoint(Vector3 position, out PathNode<P> node, out float alongPath);
 
         List<PathEnd<P>> GetClosebyEnds(P inPath, int pointIndex, float searchRadius = 0);
-
     }
 
     public struct PathNode<P> where P : IPath

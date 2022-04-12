@@ -10,6 +10,12 @@ namespace Nothke.Paths
 
         public bool buildAtStart = true;
 
+        public Path[] allPaths;
+        public float autoSearchRadius = 0.2f;
+
+        List<PathNode<Path>> closeNodesBuffer = new List<PathNode<Path>>();
+        List<PathEnd<Path>> endsBuffer = new List<PathEnd<Path>>();
+
         void Awake()
         {
             e = this;
@@ -20,12 +26,6 @@ namespace Nothke.Paths
             if (buildAtStart)
                 RebuildNetwork(true);
         }
-
-        public Path[] allPaths;
-        public float autoSearchRadius = 0.2f;
-
-        List<PathNode<Path>> closeNodesBuffer = new List<PathNode<Path>>();
-        List<PathEnd<Path>> endsBuffer = new List<PathEnd<Path>>();
 
         [ContextMenu("Rebuild Network")]
         public void RebuildNetwork()
@@ -122,7 +122,7 @@ namespace Nothke.Paths
             for (int i = closeNodesBuffer.Count - 1; i >= 0; i--)
             {
                 // Remove paths that don't match the type
-                if (!TypeBelongsToMask(vehicleType, closeNodesBuffer[i].Path.vehicleMask))
+                if (!vehicleType.BelongsToMask(closeNodesBuffer[i].Path.vehicleMask))
                     closeNodesBuffer.RemoveAt(i);
             }
 
@@ -134,17 +134,6 @@ namespace Nothke.Paths
 
             PathNode<Path> node = closeNodesBuffer[Random.Range(0, closeNodesBuffer.Count)];
             return node.Path;
-        }
-
-        public static bool TypeBelongsToMask(VehicleType type, VehicleMask mask)
-        {
-            int vt = (int)type;
-            int bm = (int)mask;
-            bool result = ((1 << vt) & bm) != 0;
-
-            //Debug.Log($"{System.Convert.ToString(bm, 2)} {vt} == {result}");
-
-            return result;
         }
 
         public List<PathEnd<Path>> GetClosebyEnds(Path inPath, int pointIndex, float searchRadius = 0)
