@@ -15,7 +15,7 @@ namespace Nothke.Paths
         Color lineColor { get; }
     }
 
-    public class Path : MonoBehaviour, IPath
+    public class Path : MonoBehaviour, IPath, IPathWithKnots
     {
         public VehicleMask vehicleMask = VehicleMask.All;
 
@@ -42,6 +42,10 @@ namespace Nothke.Paths
         public float Length => GetLength();
         public int PointCount => points.Length;
 
+        public void RebuldKnots() { BuildKnots(); }
+
+        public int KnotCount() => knots.Length;
+        public Vector3 GetKnot(int i) => knots[i];
 
         public void BuildKnots()
         {
@@ -307,7 +311,31 @@ namespace Nothke.Paths
 
         public Vector3 GetClosestPointOnPath(in Vector3 source, out int segmentIndex, out float alongPath)
         {
-            throw new System.NotImplementedException();
+                float closestD = Mathf.Infinity;
+                Vector3 closestP = default;
+                segmentIndex = 0;
+                float alongSegment = 0;
+
+                for (int i = 0; i < points.Length - 1; i++)
+                {
+                    Vector3 p = VectorUtils.ClosestPointOnLine(
+                        points[i].position, 
+                        points[i + 1].position, 
+                        source, out float _alongSegment);
+
+                    float d = (p - source).magnitude;
+
+                    if (d < closestD)
+                    {
+                        closestP = p;
+                        closestD = d;
+                        segmentIndex = i;
+                        alongSegment = _alongSegment;
+                    }
+                }
+
+                alongPath = GetDistanceTo(segmentIndex) + alongSegment;
+                return closestP;
         }
 
         public Vector3 PositionAlong(float along)
@@ -334,5 +362,7 @@ namespace Nothke.Paths
 
             return Vector3.zero;
         }
+
+
     }
 }

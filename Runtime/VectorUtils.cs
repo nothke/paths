@@ -70,5 +70,13 @@ namespace Nothke.Utilities
             }
         }
 
+        public static Vector3 ClosestPointOnLine(in Vector3 p1, in Vector3 p2, in Vector3 v, out float d)
+        {
+            Vector3 diff = p2 - p1;
+            float length = diff.magnitude;
+            d = Vector3.Dot(v - p1, diff) / length;
+            d = Mathf.Clamp(d, 0, length);
+            return p1 + diff / length * d;
+        }
     }
 }

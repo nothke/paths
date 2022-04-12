@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Nothke.Utilities;
 
 namespace Nothke.Paths
 {
@@ -132,7 +133,7 @@ namespace Nothke.Paths
 
             for (int i = 0; i < points.Length - 1; i++)
             {
-                Vector3 p = ClosestPointOnLine(points[i], points[i + 1], source, out float _alongSegment);
+                Vector3 p = VectorUtils.ClosestPointOnLine(points[i], points[i + 1], source, out float _alongSegment);
                 float d = (p - source).magnitude;
 
                 if (d < closestD)
@@ -146,15 +147,6 @@ namespace Nothke.Paths
 
             alongPath = GetDistanceTo(segmentIndex) + alongSegment;
             return closestP;
-        }
-
-        public static Vector3 ClosestPointOnLine(in Vector3 p1, in Vector3 p2, in Vector3 v, out float d)
-        {
-            Vector3 diff = p2 - p1;
-            float length = diff.magnitude;
-            d = Vector3.Dot(v - p1, diff) / length;
-            d = Mathf.Clamp(d, 0, length);
-            return p1 + diff / length * d;
         }
 
         public Vector3 PositionAlong(float along)

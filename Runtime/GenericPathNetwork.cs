@@ -79,21 +79,18 @@ namespace Nothke.Paths
 
             foreach (var path in allPaths)
             {
-                if (path is IPathWithKnots knotPath)
+                Vector3 p = path.GetClosestPointOnPath(position, out int outi, out float along);
+
+                float distance = Vector3.SqrMagnitude(p - position);
+
+                if (distance < minDistance)
                 {
-                    Vector3 p = path.GetClosestPointOnPath(position, out int outi, out float along);
+                    minDistance = distance;
 
-                    float distance = Vector3.SqrMagnitude(p - position);
-
-                    if (distance < minDistance)
-                    {
-                        minDistance = distance;
-
-                        node.Path = path;
-                        node.Index = outi;
-                        minAlong = along;
-                        minPoint = p;
-                    }
+                    node.Path = path;
+                    node.Index = outi;
+                    minAlong = along;
+                    minPoint = p;
                 }
             }
 
