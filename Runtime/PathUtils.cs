@@ -4,8 +4,55 @@ using UnityEngine;
 
 namespace Nothke.Paths
 {
+    public interface IClosestPathFindable
+    {
+        IPath Path { get; }
+    }
+
     public static class PathUtils
     {
+        public static T FindClosest<T>(List<T> all, Vector3 from, out int closestIndex, out float distance) where T : IClosestPathFindable
+        {
+            T closestFindable = default;
+            closestIndex = -1;
+            float closestDistance = Mathf.Infinity;
+            foreach (var findable in all)
+            {
+                if (findable.Path.PointCount < 2)
+                    continue;
+
+                var point = findable.Path.GetClosestPointOnPath(from, out int i, out float along);
+
+                float d = (from - point).sqrMagnitude;
+
+                if (d < closestDistance)
+                {
+                    closestDistance = d;
+                    closestFindable = findable;
+                    closestIndex = i;
+                }
+            }
+
+            //Debug.Log($"Found {closestWire.name}, {closestIndex}, distance: {closestDistance}");
+
+            distance = Mathf.Sqrt(closestDistance);
+            return closestFindable;
+        }
+
+        public static float GetAngle(in PathEnd<IPath> current, in PathEnd<IPath> next)
+        {
+            Vector3 currentDir = -current.GetOutDirection();
+            Vector3 nextDir = next.GetOutDirection();
+
+            //Debug.Log($"This: {currentDir}, next: {nextDir}");
+
+            float angle = Vector3.SignedAngle(currentDir, nextDir, Vector3.up);
+            //Debug.Log("Found angle: " + angle);
+            return angle;
+        }
+
+        #region Drawing
+
         public static void DrawlineWithArrow(Vector3 p0, Vector3 p1, float scale)
         {
             Gizmos.DrawLine(p0, p1);
@@ -108,5 +155,7 @@ namespace Nothke.Paths
                     return;
             }
         }
+
+        #endregion
     }
 }
