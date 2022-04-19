@@ -1,3 +1,5 @@
+//#define PATHS_SPLIT_EVENLY
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -43,7 +45,7 @@ namespace Nothke.Paths
             List<Vector3> knotsList = new List<Vector3>();
             for (int i = 0; i < points.Length - 1; i++)
             {
-#if SPLIT_EVENLY
+#if PATHS_SPLIT_EVENLY
                 var nodesOfPath = VectorUtils.SplitEvenly(PositionAt(i), PositionAt(i + 1), 1);
                 knotsList.AddRange(nodesOfPath);
 #else

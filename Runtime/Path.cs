@@ -1,12 +1,9 @@
-﻿#define SPLIT_EVENLY
+﻿//#define PATHS_SPLIT_EVENLY
 
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
-#if SPLIT_EVENLY
 using Nothke.Utilities;
-#endif
 
 namespace Nothke.Paths
 {
@@ -53,11 +50,11 @@ namespace Nothke.Paths
             List<Vector3> knotsList = new List<Vector3>();
             for (int i = 0; i < points.Length - 1; i++)
             {
-#if SPLIT_EVENLY
+#if PATHS_SPLIT_EVENLY
                 var nodesOfPath = VectorUtils.SplitEvenly(points[i].position, points[i + 1].position, 1);
                 knotsList.AddRange(nodesOfPath);
 #else
-            knotsList.Add(points[i].position);
+                knotsList.Add(points[i].position);
 #endif
             }
 
@@ -312,31 +309,31 @@ namespace Nothke.Paths
 
         public Vector3 GetClosestPointOnPath(in Vector3 source, out int segmentIndex, out float alongPath)
         {
-                float closestD = Mathf.Infinity;
-                Vector3 closestP = default;
-                segmentIndex = 0;
-                float alongSegment = 0;
+            float closestD = Mathf.Infinity;
+            Vector3 closestP = default;
+            segmentIndex = 0;
+            float alongSegment = 0;
 
-                for (int i = 0; i < points.Length - 1; i++)
+            for (int i = 0; i < points.Length - 1; i++)
+            {
+                Vector3 p = VectorUtils.ClosestPointOnLine(
+                    points[i].position,
+                    points[i + 1].position,
+                    source, out float _alongSegment);
+
+                float d = (p - source).magnitude;
+
+                if (d < closestD)
                 {
-                    Vector3 p = VectorUtils.ClosestPointOnLine(
-                        points[i].position, 
-                        points[i + 1].position, 
-                        source, out float _alongSegment);
-
-                    float d = (p - source).magnitude;
-
-                    if (d < closestD)
-                    {
-                        closestP = p;
-                        closestD = d;
-                        segmentIndex = i;
-                        alongSegment = _alongSegment;
-                    }
+                    closestP = p;
+                    closestD = d;
+                    segmentIndex = i;
+                    alongSegment = _alongSegment;
                 }
+            }
 
-                alongPath = GetDistanceTo(segmentIndex) + alongSegment;
-                return closestP;
+            alongPath = GetDistanceTo(segmentIndex) + alongSegment;
+            return closestP;
         }
 
         public Vector3 PositionAlong(float along)
