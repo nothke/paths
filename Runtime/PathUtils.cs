@@ -61,9 +61,9 @@ namespace Nothke.Paths
             }
         }
 
-        public static void FilterFacingEnds(List<PathEnd<IPath>> closeNodesBuffer, bool filterForwardFacing)
+        public static void FilterFacingEnds(List<PathEnd<IPath>> closeNodesBuffer, bool excludeIncomingPaths)
         {
-            if (filterForwardFacing)
+            if (excludeIncomingPaths)
             {
                 for (int i = closeNodesBuffer.Count - 1; i >= 0; i--)
                     if (closeNodesBuffer[i].IsLast)
