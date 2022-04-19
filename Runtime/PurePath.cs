@@ -19,6 +19,9 @@ namespace Nothke.Paths
 
         public Vector3 this[int i] { get => points[i]; }
 
+        public VehicleMask vehicleMask;
+        public VehicleMask VehicleMask => vehicleMask;
+
 #if UNITY_EDITOR
         public string name;
         public string Name => name;

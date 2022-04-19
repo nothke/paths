@@ -18,6 +18,7 @@ namespace Nothke.Paths
     public class Path : MonoBehaviour, IPath, IPathWithKnots
     {
         public VehicleMask vehicleMask = VehicleMask.All;
+        public VehicleMask VehicleMask => vehicleMask;
 
         public bool noSpawn;
 

@@ -123,15 +123,5 @@ namespace Nothke.Paths
         public void RebuildNetwork()
         {
         }
-
-        void Start()
-        {
-
-        }
-
-        void Update()
-        {
-
-        }
     }
 }

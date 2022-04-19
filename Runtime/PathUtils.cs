@@ -51,6 +51,16 @@ namespace Nothke.Paths
             return angle;
         }
 
+        public static void FilterPathsByVehicleType(List<PathNode<IPath>> closeNodesBuffer, VehicleType type)
+        {
+            for (int i = closeNodesBuffer.Count - 1; i >= 0; i--)
+            {
+                // Remove paths that don't match the type
+                if (!type.BelongsToMask(closeNodesBuffer[i].Path.VehicleMask))
+                    closeNodesBuffer.RemoveAt(i);
+            }
+        }
+
         #region Drawing
 
         public static void DrawlineWithArrow(Vector3 p0, Vector3 p1, float scale)
