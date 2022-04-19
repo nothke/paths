@@ -51,7 +51,7 @@ namespace Nothke.Paths
             return angle;
         }
 
-        public static void FilterPathsByVehicleType(List<PathNode<IPath>> closeNodesBuffer, VehicleType type)
+        public static void FilterEndsByVehicleType(List<PathEnd<IPath>> closeNodesBuffer, VehicleType type)
         {
             for (int i = closeNodesBuffer.Count - 1; i >= 0; i--)
             {
