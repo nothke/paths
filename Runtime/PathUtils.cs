@@ -39,7 +39,7 @@ namespace Nothke.Paths
             return closestFindable;
         }
 
-        public static float GetAngle(in PathEnd<IPath> current, in PathEnd<IPath> next)
+        public static float GetAngle<T>(in PathEnd<T> current, in PathEnd<T> next) where T : IPath
         {
             Vector3 currentDir = -current.GetOutDirection();
             Vector3 nextDir = next.GetOutDirection();
