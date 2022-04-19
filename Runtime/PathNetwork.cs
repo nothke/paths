@@ -80,6 +80,9 @@ namespace Nothke.Paths
             //RebuildNetwork();
         }
 
+        /// <summary>
+        /// This is actually a knot
+        /// </summary>
         public PathNode<Path> GetClosestNode(Vector3 position)
         {
             RebuildNetworkIfNecessary();

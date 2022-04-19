@@ -31,6 +31,12 @@ namespace Nothke.Paths
 
                 allPaths = paths.ToArray();
 
+                foreach (var path in allPaths)
+                {
+                    if (path is IPathWithKnots knotPath)
+                        knotPath.RebuldKnots();
+                }
+
                 Debug.Log("GenericPathNetwork found " + allPaths.Length + " paths");
             }
         }
@@ -41,6 +47,9 @@ namespace Nothke.Paths
             return endsBuffer;
         }
 
+        /// <summary>
+        /// Actually a knot if available
+        /// </summary>
         public PathNode<IPath> GetClosestNode(Vector3 position)
         {
             var node = new PathNode<IPath>();
@@ -54,6 +63,21 @@ namespace Nothke.Paths
                     for (int i = 0; i < knotPath.KnotCount(); i++)
                     {
                         float distance = Vector3.SqrMagnitude(knotPath.GetKnot(i) - position);
+
+                        if (distance < minDistance)
+                        {
+                            minDistance = distance;
+
+                            node.Path = path;
+                            node.Index = i;
+                        }
+                    }
+                }
+                else // if without knots
+                {
+                    for (int i = 0; i < path.PointCount; i++)
+                    {
+                        float distance = Vector3.SqrMagnitude(path.PositionAt(i) - position);
 
                         if (distance < minDistance)
                         {
