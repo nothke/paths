@@ -61,6 +61,22 @@ namespace Nothke.Paths
             }
         }
 
+        public static void FilterFacingEnds(List<PathEnd<IPath>> closeNodesBuffer, bool filterForwardFacing)
+        {
+            if (filterForwardFacing)
+            {
+                for (int i = closeNodesBuffer.Count - 1; i >= 0; i--)
+                    if (closeNodesBuffer[i].IsLast)
+                        closeNodesBuffer.RemoveAt(i);
+            }
+            else
+            {
+                for (int i = closeNodesBuffer.Count - 1; i >= 0; i--)
+                    if (!closeNodesBuffer[i].IsLast)
+                        closeNodesBuffer.RemoveAt(i);
+            }
+        }
+
         #region Drawing
 
         public static void DrawlineWithArrow(Vector3 p0, Vector3 p1, float scale)
