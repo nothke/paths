@@ -259,6 +259,32 @@ namespace Nothke.Paths
                 }
             }
         }
+
+        [ContextMenu("Convert to GameObjectless")]
+        void ConvertToGameObjectless()
+        {
+            if (Application.isPlaying)
+                return;
+
+            var gop = gameObject.AddComponent<GameObjectlessPath>();
+            gop.noSpawn = noSpawn;
+            gop.vehicleMask = vehicleMask;
+            gop.color = color;
+
+            gop.points = new Vector3[points.Length];
+
+            for (int i = 0; i < points.Length; i++)
+            {
+                gop.points[i] = points[i].localPosition;
+            }
+
+            for (int i = points.Length - 1; i >= 0; i--)
+            {
+                DestroyImmediate(points[i].gameObject);
+            }
+
+            DestroyImmediate(this);
+        }
 #endif
 
         public Vector3 PositionAt(int i)

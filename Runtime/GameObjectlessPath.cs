@@ -22,7 +22,7 @@ namespace Nothke.Paths
 
 #if UNITY_EDITOR
         [Header("Presentation")]
-        [SerializeField] Color color = Color.blue;
+        public Color color = Color.blue;
 
         public string Name => name;
 #endif
