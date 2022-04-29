@@ -41,5 +41,28 @@ namespace Nothke.Paths
 
             serializedObject.ApplyModifiedProperties();
         }
+
+        private void OnSceneGUI()
+        {
+            if (Event.current.commandName == "FrameSelected")
+            {
+                Event.current.commandName = "";
+
+                if (component.PointCount > 0)
+                {
+                    Bounds b = new Bounds(component.points[0].position, Vector3.zero);
+
+                    for (int i = 0; i < component.PointCount; i++)
+                    {
+                        b.Encapsulate(component.points[i].position);
+                    }
+
+                    float largestDim = Mathf.Max(b.extents.x, Mathf.Max(b.extents.y, b.extents.z));
+
+                    SceneView.currentDrawingSceneView.LookAt(
+                        b.center, SceneView.currentDrawingSceneView.rotation, largestDim);
+                }
+            }
+        }
     }
 }
