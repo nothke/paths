@@ -117,17 +117,4 @@ namespace Nothke.Paths
             return (p2 - p1).normalized;
         }
     }
-
-    /*
-    public interface IEnd
-    {
-        IPath Path { get; set; }
-        bool IsLast { get; set; }
-    }
-
-    public interface INode
-    {
-        IPath Path { get; set; }
-        int Index { get; set; }
-    }*/
 }
