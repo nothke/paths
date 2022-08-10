@@ -139,6 +139,9 @@ namespace Nothke.Paths
             return node.Path;
         }
 
+        /// <summary>
+        /// Returns a cached buffer
+        /// </summary>
         public List<PathEnd<Path>> GetClosebyEnds(Path inPath, int pointIndex, float searchRadius = 0)
         {
             GetClosebyEnds(allPaths, endsBuffer, inPath, pointIndex, searchRadius != 0 ? searchRadius : autoSearchRadius);

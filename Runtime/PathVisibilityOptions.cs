@@ -52,12 +52,12 @@ namespace Nothke.Paths
 
         public bool liveEdit = false;
         public bool drawDirectionArrows = true;
-        public float directionArrowsScale = 1;
+        [Min(0)] public float directionArrowsScale = 1;
         public bool highlightSelectedPaths = true;
         public Color highlightSelectedColor = new Color(1, 1, 1, 0.75f);
-        public float endNodesSize = 0.2f;
+        [Min(0)] public float endNodesSize = 0.2f;
         public bool drawPointCrosses = false;
-        public float pointCrossesSize = 0.1f;
+        [Min(0)] public float pointCrossesSize = 0.1f;
         public enum ColorMode { PathColor, Random, SpawnAllowed, ByType, TypeMask }
         public ColorMode colorMode;
         public bool showKnots = false;
