@@ -21,24 +21,27 @@ namespace Nothke.Paths
             endsBuffer = new List<PathEnd<IPath>>(8);
 
             if (collectAtStart)
+                Collect();
+        }
+
+        void Collect()
+        {
+            List<IPath> paths = new List<IPath>();
+
+            var _paths = FindObjectsOfType<Path>();
+            var _golessPaths = FindObjectsOfType<GameObjectlessPath>();
+            paths.AddRange(_paths);
+            paths.AddRange(_golessPaths);
+
+            allPaths = paths.ToArray();
+
+            foreach (var path in allPaths)
             {
-                List<IPath> paths = new List<IPath>();
-
-                var _paths = FindObjectsOfType<Path>();
-                var _golessPaths = FindObjectsOfType<GameObjectlessPath>();
-                paths.AddRange(_paths);
-                paths.AddRange(_golessPaths);
-
-                allPaths = paths.ToArray();
-
-                foreach (var path in allPaths)
-                {
-                    if (path is IPathWithKnots knotPath)
-                        knotPath.RebuldKnots();
-                }
-
-                Debug.Log("GenericPathNetwork found " + allPaths.Length + " paths");
+                if (path is IPathWithKnots knotPath)
+                    knotPath.RebuldKnots();
             }
+
+            Debug.Log("GenericPathNetwork found " + allPaths.Length + " paths");
         }
 
         public List<PathEnd<IPath>> GetClosebyEnds(IPath inPath, int pointIndex, float searchRadius = 0)
@@ -146,6 +149,7 @@ namespace Nothke.Paths
 
         public void RebuildNetwork()
         {
+            Collect();
         }
     }
 }
