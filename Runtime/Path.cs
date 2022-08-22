@@ -264,9 +264,11 @@ namespace Nothke.Paths
         public void ConvertToGameObjectless()
         {
             if (Application.isPlaying)
+            {
+                Debug.LogError("Attempting to convert to GameObjectless during runtime");
                 return;
-            else Debug.LogError("Attempting to convert to GameObjectless during runtime");
-
+            }
+            
             var gop = gameObject.AddComponent<GameObjectlessPath>();
             gop.noSpawn = noSpawn;
             gop.vehicleMask = vehicleMask;
